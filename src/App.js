@@ -69,33 +69,38 @@ function App() {
   // }, []);
 
   const onContinentChange = async (e) => {
-    const continentCode = e.target.value;
+    const continentCode = e.target.value;   
 
-    setContinent(continentCode);
-
-    const url = continentCode === "worldwide"
+    const url = 
+    continentCode === "worldwide"
       ? "https://disease.sh/v3/covid-19/all"
       : `https://disease.sh/v3/covid-19/continents${continentCode}`;
-    //https://disease.sh/v3/covid-19/continents
+
+    await fetch(url)
+    .then(response => response.json())
+    .then(data => {      
+      setContinent(continentCode);
+
+      setContinentInfo(data);
+    })
   }
 
   const onCountryChange = async (e) => {
     const countryCode = e.target.value;
 
-    setCountry(countryCode);
+    const url = 
+      countryCode === "worldwide"
+        ? "https://disease.sh/v3/covid-19/all"
+        : `https://disease.sh/v3/covid-19/countries/${countryCode}`;
 
-    const url = countryCode === "worldwide"
-      ? "https://disease.sh/v3/covid-19/all"
-      : `https://disease.sh/v3/covid-19/countries/${countryCode}`;
+    await fetch(url)
+    .then((response) => response.json())
+    .then(data => {
+      setCountry(countryCode);
 
-      await fetch(url)
-      .then((response) => response.json())
-      .then((data) => {
-        const countries = data.map((country) => ({
-            name: country.country, //United States, United Kingdom....
-            value: country.countryInfo.iso2 //USA, UK, RU
-          }));
-  }
+      setCountryInfo(data);
+    })
+  };
   
   return (
     <>
@@ -179,10 +184,23 @@ function App() {
 
           {/* Title */} 
           <div className="app__stats">
-            <InfoBox title="Coronavirus Cases" cases={111} total={2000} />
-            <InfoBox title="Recovered" cases={111} total={2000} />
-            <InfoBox title="Deaths" cases={111} total={2000} />
+            <InfoBox 
+              title="Coronavirus Cases" 
+              cases={countryInfo.todayCases} 
+              total={countryInfo.cases} 
+            />
+            <InfoBox 
+              title="Recovered" 
+              cases={countryInfo.todayRecovered} 
+              total={countryInfo.recovered} 
+            />
+            <InfoBox 
+              title="Deaths" 
+              cases={countryInfo.todayDeaths} 
+              total={countryInfo.deaths} 
+            />
           </div>
+
           <Map /> 
         </div>
 
