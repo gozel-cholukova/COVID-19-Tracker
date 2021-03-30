@@ -4,20 +4,34 @@ import InfoBox from './InfoBox';
 import './App.css';
 import Map from './Map';
 
-
 function App() {
   const [continents, setContinents] =  useState([]);
-  const [continent, setContinent] =  useState('worldwide');
-  const [continentInfo, setContinentInfo] = useState();
+  const [continent, setContinent] =  useState("worldwide");
+  const [continentInfo, setContinentInfo] = useState({});
 
   const [countries, setCountries] = useState([]);
-  const [country, setCountry] = useState('worldwide');
-  const [countryInfo, setCountryInfo] = useState();
+  const [country, setCountry] = useState("worldwide");
+  const [countryInfo, setCountryInfo] = useState({});
+  const [tableData, setTableData] = useState([]);
   // STATE = how to write a variable in REACT <<<<<<<<
 
   // https://disease.sh/v3/covid-19/continents
   
   //USEEFFECT = Runs a piece of code based on a given condition
+  useEffect(() => {
+    fetch ("https://disease.sh/v3/covid-19/all")
+    .then(response => response.json())
+    .then(data => {
+      setCountryInfo(data);
+    })
+
+    fetch ("https://disease.sh/v3/covid-19/all")
+    .then(response => response.json())
+    .then(data => {
+      setContinentInfo(data);
+    })
+  }, [])
+
 
   useEffect(() => {
     // The code inside here will run once when the component loads and not again after
@@ -29,7 +43,7 @@ function App() {
       .then((data) => {
         const continents = data.map((continent) => ({
             name: continent.continent,
-            value: continent.continentInfo,
+            value: continent.continentInfo
           }));
           setContinents(continents);          
       });
@@ -45,28 +59,13 @@ function App() {
             name: country.country, //United States, United Kingdom....
             value: country.countryInfo.iso2 //USA, UK, RU
           }));
+          setTableData(data);
           setCountries(countries);
       });
     };
     getCountriesData();
   }, []);
 
-  // useEffect(() => {
-  //   const getCountriesData = async () => {
-  //     await fetch("https://disease.sh/v3/covid-19/countries")
-  //     .then((response) => response.json())
-  //     .then((data) => {
-  //       const countries = data.map((country) => ({
-  //           name: country.country, //United States, United Kingdom....
-  //           value: country.countryInfo.iso2 //USA, UK, RU
-  //         }));
-
-  //         setCountries(country);
-  //     });
-  //   };
-
-  //   getCountriesData();
-  // }, []);
 
   const onContinentChange = async (e) => {
     const continentCode = e.target.value;   
@@ -74,16 +73,16 @@ function App() {
     const url = 
     continentCode === "worldwide"
       ? "https://disease.sh/v3/covid-19/all"
-      : `https://disease.sh/v3/covid-19/continents${continentCode}`;
+      : `https://disease.sh/v3/covid-19/continents/${continentCode}`;
 
     await fetch(url)
-    .then(response => response.json())
-    .then(data => {      
+    .then((response) => response.json())
+    .then((data) => {      
       setContinent(continentCode);
 
       setContinentInfo(data);
     })
-  }
+  };
 
   const onCountryChange = async (e) => {
     const countryCode = e.target.value;
@@ -95,7 +94,7 @@ function App() {
 
     await fetch(url)
     .then((response) => response.json())
-    .then(data => {
+    .then((data) => {
       setCountry(countryCode);
 
       setCountryInfo(data);
@@ -133,9 +132,21 @@ function App() {
           </div>
 
           <div className="app__stats">
-            <InfoBox title="Coronavirus Cases" cases={111} total={2000} />
-            <InfoBox title="Recovered" cases={111} total={2000} />
-            <InfoBox title="Deaths" cases={111} total={2000} />
+            <InfoBox 
+              title="Coronavirus Cases" 
+              cases={continentInfo.todayCases} 
+              total={continentInfo.cases} 
+            />
+            <InfoBox 
+              title="Recovered" 
+              cases={continentInfo.todayRecovered} 
+              total={continentInfo.recovered} 
+            />
+            <InfoBox 
+              title="Deaths" 
+              cases={continentInfo.todayDeaths} 
+              total={continentInfo.deaths} 
+            />
           </div>
 
           <Map />
@@ -156,7 +167,7 @@ function App() {
         <div className="app__contiLeft">
           <CardContent>
             <h3>Live Cases by Country</h3>
-            {/* Table */}
+            <Table countries={tableData} />
             <h3>Worldwide new cases</h3>
             {/* Graph */}
           </CardContent>       
