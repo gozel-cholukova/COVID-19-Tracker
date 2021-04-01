@@ -3,12 +3,16 @@ import { MenuItem, FormControl, Select, Card, CardContent } from "@material-ui/c
 import InfoBox from './InfoBox';
 import './App.css';
 import Map from './Map';
+import Table from "./Table";
+import Tabel from "./Tabel";
+import { sortData } from "./utl";
+import LineGraph from "./LineGraph";
 
 function App() {
   const [continents, setContinents] =  useState([]);
   const [continent, setContinent] =  useState("worldwide");
   const [continentInfo, setContinentInfo] = useState({});
-
+  
   const [countries, setCountries] = useState([]);
   const [country, setCountry] = useState("worldwide");
   const [countryInfo, setCountryInfo] = useState({});
@@ -20,17 +24,17 @@ function App() {
   //USEEFFECT = Runs a piece of code based on a given condition
   useEffect(() => {
     fetch ("https://disease.sh/v3/covid-19/all")
-    .then(response => response.json())
-    .then(data => {
+    .then((response) => response.json())
+    .then((data) => {
       setCountryInfo(data);
-    })
+    }); 
 
     fetch ("https://disease.sh/v3/covid-19/all")
-    .then(response => response.json())
-    .then(data => {
+    .then((response) => response.json())
+    .then((data) => {
       setContinentInfo(data);
-    })
-  }, [])
+    });
+  }, []);
 
 
   useEffect(() => {
@@ -45,6 +49,9 @@ function App() {
             name: continent.continent,
             value: continent.continentInfo
           }));
+
+          const sortedData = sortData(data);
+          setTableData(sortedData);
           setContinents(continents);          
       });
     };
@@ -53,15 +60,17 @@ function App() {
 
     const getCountriesData = async () => {
       await fetch("https://disease.sh/v3/covid-19/countries")
-      .then((response) => response.json())
-      .then((data) => {
-        const countries = data.map((country) => ({
-            name: country.country, //United States, United Kingdom....
-            value: country.countryInfo.iso2 //USA, UK, RU
-          }));
-          setTableData(data);
-          setCountries(countries);
-      });
+        .then((response) => response.json())
+        .then((data) => {
+          const countries = data.map((country) => ({
+              name: country.country, //United States, United Kingdom....
+              value: country.countryInfo.iso2 //USA, UK, RU
+            }));
+
+            const sortedData = sortData(data);
+            setTableData(sortedData);
+            setCountries(countries);
+        });
     };
     getCountriesData();
   }, []);
@@ -79,7 +88,6 @@ function App() {
     .then((response) => response.json())
     .then((data) => {      
       setContinent(continentCode);
-
       setContinentInfo(data);
     })
   };
@@ -96,7 +104,6 @@ function App() {
     .then((response) => response.json())
     .then((data) => {
       setCountry(countryCode);
-
       setCountryInfo(data);
     })
   };
@@ -155,7 +162,7 @@ function App() {
         <Card className="app__right">
           <CardContent>
             <h3>Live Cases by Continent</h3>
-            {/* Table */}
+            <Tabel continents={tableData} />
             <h3>Worldwide new cases</h3>
             {/* Graph */}
           </CardContent>
@@ -169,7 +176,7 @@ function App() {
             <h3>Live Cases by Country</h3>
             <Table countries={tableData} />
             <h3>Worldwide new cases</h3>
-            {/* Graph */}
+            <LineGraph />
           </CardContent>       
         </div>
 
