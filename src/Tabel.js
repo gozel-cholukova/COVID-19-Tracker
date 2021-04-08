@@ -1,5 +1,6 @@
 import React from 'react';
 import './Tabel.css';
+import numeral from "numeral";
 
 function Tabel({continents}) {
   return (
@@ -8,7 +9,7 @@ function Tabel({continents}) {
         <tr>
           <td>{continent}</td>
           <td>
-            <strong>{cases}</strong>
+          <strong>{numeral(cases).format("000,000")}</strong>
           </td>
         </tr>
       ))} 

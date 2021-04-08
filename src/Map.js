@@ -1,16 +1,18 @@
 import React from 'react';
 import { MapContainer as LeafletMap, TileLayer } from "react-leaflet";
 import './Map.css';
+import { showDataOnMap } from "./utl";
 
-function Map({ center, zoom }) {
+function Map({ countries, casesType, center, zoom }) {
   return (
     <div className="map">
-      <h1>Map</h1>
       <LeafletMap center={center} zoom={zoom}>
         <TileLayer 
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
         />
+        {/* Loop through countries and continents and draw circles on the screen */}
+        {showDataOnMap(countries, casesType)}
       </LeafletMap>      
     </div>
   );
@@ -19,12 +21,7 @@ function Map({ center, zoom }) {
 export default Map;
 
 
-// import React from "react";
-// import { MapContainer, TileLayer, useMap } from "react-leaflet";
-// import "./Map.css";
-// import { showDataOnMap } from "./util";
 
-// function Map({ countries, casesType, center, zoom }) {
 //   function ChangeView({ center, zoom }) {
 //     const map = useMap();
 //     map.setView(center, zoom);
@@ -44,7 +41,7 @@ export default Map;
 //         attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
 //         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
 //       />
-//       {showDataOnMap(countries, casesType)}
+//       
 //     </MapContainer>
 //   );
 // }
