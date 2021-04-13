@@ -1,5 +1,6 @@
 .infoBox {
   flex: 1;
+  cursor: pointer;
 }
 
 .infoBox:not(:last-child) {
@@ -22,7 +23,7 @@
 }
 
 .infoBox__cases--green {
-  color: lightgreen;
+  color: lightgreen !important;
 }
 
 .infoBox--grey {
@@ -31,7 +32,7 @@
 
 .infoBox__cases--grey {
   color: grey;
-}
+} 
 
 .infoBox__total {
   color: #6c757d;
